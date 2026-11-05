@@ -23,6 +23,14 @@ POSITIVE_WORDS = [
     "chill",
     "relaxed",
     "amazing",
+    # added: everyday positive words that show up in the dataset
+    "proud",
+    "hopeful",
+    "better",
+    "smiling",
+    "glad",
+    "enjoy",
+    "wonderful",
 ]
 
 NEGATIVE_WORDS = [
@@ -36,6 +44,13 @@ NEGATIVE_WORDS = [
     "stressed",
     "hate",
     "boring",
+    # added: everyday negative words that show up in the dataset
+    "stuck",
+    "died",
+    "worse",
+    "annoyed",
+    "exhausted",
+    "lonely",
 ]
 
 # ---------------------------------------------------------------------
