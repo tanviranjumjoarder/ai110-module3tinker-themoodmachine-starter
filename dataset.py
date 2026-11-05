@@ -58,7 +58,6 @@ NEGATIVE_WORDS = [
     "exhausted",
     "lonely",
     # added in Part 3 (slang fix): common put-down slang
-    "mid",
     "trash",
 ]
 
@@ -133,7 +132,7 @@ TRUE_LABELS = [
     "positive",  # "Not bad at all, honestly better than I expected"
     "mixed",     # "Exam went terrible but at least the weekend is here"
     "positive",  # "can't stop smiling today :)"
-    "negative",  # "That movie was mid tbh"  (mild; some would say neutral)
+    "neutral",   # "That movie was mid tbh"  ("mid" = average, not bad)
     "negative",  # "Missing home a lot lately"
     "neutral",   # "Meeting got moved to 3pm"
     "positive",  # "I hate how much I love this show 😂"  (affectionate; could be mixed)

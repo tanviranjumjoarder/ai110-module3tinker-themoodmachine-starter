@@ -23,7 +23,7 @@ Label a short, informal post (one or two sentences, like a social media update o
 ## 2. Data
 
 **Dataset description:**
-`SAMPLE_POSTS` has **20** posts: the 6 starter posts, 10 I added in Part 1 and 4 more I added in Part 4 to see how each model reacted to new data. Label counts: 7 positive, 7 negative, 3 neutral, 3 mixed.
+`SAMPLE_POSTS` has **20** posts: the 6 starter posts, 10 I added in Part 1 and 4 more I added in Part 4 to see how each model reacted to new data. Label counts: 7 positive, 6 negative, 4 neutral, 3 mixed.
 
 There is also a separate held-out set in `stress_test.py`: 14 "breaker" sentences and 7 pairs of the same idea written in standard versus informal wording. Neither model was built or trained on these.
 
@@ -32,7 +32,7 @@ I labeled each post by what I think the writer meant, not by the words it uses. 
 
 - `"Just got the internship offer!!! 😭🎉"` → **positive**. Here 😭 means happy tears, but the same emoji means sadness in other posts.
 - `"I absolutely love getting stuck in traffic for an hour"` → **negative** (sarcasm), even though it contains "love".
-- `"That movie was mid tbh"` → **negative**. "Mid" is mild, so some people would call this neutral.
+- `"That movie was mid tbh"` → **neutral**. "Mid" means average, not bad. My first draft labeled it negative; I changed it to neutral when I reviewed the labels.
 - `"I hate how much I love this show 😂"` → **positive** (affectionate complaining). It could also be called mixed.
 - `"This is fine"` → **neutral**. Depending on tone this could be resigned or sarcastic.
 
@@ -47,7 +47,7 @@ I labeled each post by what I think the writer meant, not by the words it uses. 
 **Possible issues with the dataset:**
 
 - It is tiny (20 posts), so one post can change the ML model a lot.
-- Only 3 neutral and 3 mixed posts, so those labels are underrepresented.
+- Only 4 neutral and 3 mixed posts, so those labels are underrepresented.
 - Every post is short, in English, and written in a US student / internet register. There is no regional English, no non-native English, no code-switching and no long text.
 - All labels come from one person, so there is no check on how much other people would agree.
 
@@ -58,7 +58,7 @@ I labeled each post by what I think the writer meant, not by the words it uses. 
 1. **Preprocess** (`preprocess`): lowercase; keep emoticons (`:)`, `:(`) and emoji as their own tokens; drop other punctuation; remove apostrophes (`can't` → `cant`); shrink stretched words (`soooo happyyy` → `so happy`, keeping whichever version is a known word).
 2. **Word and emoji matches** (`analyze`): +1 for each word in `POSITIVE_WORDS`, −1 for each word in `NEGATIVE_WORDS`. Emoji in `EMOJI_SCORES` add their own ±1.
 3. **Negation (my Part 2 enhancement):** if a negation word (`not`, `no`, `never`, `dont`, `cant`, `isnt`, ...) appeared within the previous 3 tokens, the next sentiment word counts the opposite way. So `not happy` = −1 and `not bad` = +1. Each negation flips one word only.
-4. **Emoji and slang signals (my Part 3 fix):** added `EMOJI_SCORES` and the slang words `fire, slaps, bussin, goated, lit` (positive) and `mid, trash` (negative). Negation does not flip emoji, because in "fire no cap 🔥" the "no" is slang and doesn't negate anything. I left out 🙂 and 💀 on purpose: 🙂 is often passive-aggressive and 💀 usually means "dying of laughter".
+4. **Emoji and slang signals (my Part 3 fix):** added `EMOJI_SCORES` and the slang words `fire, slaps, bussin, goated, lit` (positive) and `trash` (negative). I first had `mid` as negative too, then removed it after relabeling the "mid" post as neutral, so the word list agrees with my labels. Negation does not flip emoji, because in "fire no cap 🔥" the "no" is slang and doesn't negate anything. I left out 🙂 and 💀 on purpose: 🙂 is often passive-aggressive and 💀 usually means "dying of laughter".
 5. **"can't stop" fix (Part 4):** a negated `stop` cancels the negation, so "can't stop smiling" stays positive.
 6. **Thresholds** (`predict_label`): if both positive and negative signals fired and |score| ≤ 1 → `mixed`; otherwise score > 0 → `positive`, < 0 → `negative`, 0 → `neutral`.
 
@@ -80,20 +80,20 @@ I labeled each post by what I think the writer meant, not by the words it uses. 
 
 ## 4. How the ML Model Works
 
-**Features used:** bag of words from `CountVectorizer` with its default settings. That tokenizer keeps only words of 2+ letters, so **every emoji and emoticon is thrown away** before training. The vocabulary has 75 words and no emoji.
+**Features used:** bag of words from `CountVectorizer` with its default settings. That tokenizer keeps only words of 2+ letters, so **every emoji and emoticon is thrown away** before training. With the 20 posts the vocabulary has 86 words and no emoji.
 
 **Training data:** `SAMPLE_POSTS` and `TRUE_LABELS` from `dataset.py`.
 
 **Training behavior:**
 
 - Accuracy on the training posts is **1.00** every time, with 16 posts and with 20. That only shows it memorized the posts; it says nothing about new text.
-- On the 14 held-out breakers it went from **5/14 → 7/14** after I added 4 posts. Its answers changed a lot. "this song slaps" went from positive to negative, and all three sarcasm breakers became "correct" only because the model now leans negative on almost anything unfamiliar.
+- On the 14 held-out breakers it went from **5/14 → 7/14** after I added 4 posts, and individual answers swung a lot along the way. With the 4 new posts and "mid" still labeled negative, "this song slaps" turned negative and all three sarcasm breakers came out negative, because the model leaned negative on almost anything unfamiliar. Changing that **one** label to neutral left the score at 7/14 but swapped which ones were right: "this song slaps" went back to positive, two of the three sarcasm breakers went back to positive, and "I'm fine 🙂" became correctly neutral. The rule-based model did not change at all from the relabel.
 - Label sensitivity test: I flipped the label of the traffic sarcasm post to `positive` and retrained. "I love getting stuck in traffic" flipped from negative to positive. One label out of 16 decided that prediction.
 
 **Strengths and weaknesses:**
 
 - Strength: it picked up sarcasm-like and slang patterns that I never wrote rules for, as long as similar words were in the training posts.
-- Weakness: it learns spurious cues. "I am very happy" → **negative**, because "am" appears in "I am not happy about this". "best day ever 😂😂" → negative, because the only word it recognizes is "day", from "Today was a terrible day".
+- Weakness: it learns spurious cues. "I am very happy" → **negative**, because "am" appears in "I am not happy about this". "best day ever 😂😂" → negative, because the only word it recognizes is "day", from "Today was a terrible day". "This party is really fun" → neutral, because "fun" never appears in training, so all it sees is "this" and "is", from the neutral post "This is fine".
 
 ## 5. Evaluation
 
@@ -110,9 +110,10 @@ I labeled each post by what I think the writer meant, not by the words it uses. 
 | Basic scoring + negation (Part 2) | 16 | 0.62 | 3/14 |
 | + emoji and slang signals (Part 3 fix) | 16 | 0.75 | 7/14 |
 | + "can't stop" negation fix | 16 | 0.81 | 8/14 |
-| + 4 more posts (Part 4) | 20 | **0.75** | 8/14 |
+| + 4 more posts (Part 4) | 20 | 0.75 | 8/14 |
+| Relabel "mid" post as neutral, drop `mid` from the word list | 20 | **0.75** | 8/14 |
 
-The drop at the end comes from adding harder posts, not from making the model worse.
+The drop from 0.81 comes from adding harder posts, not from making the model worse. After the relabel the "mid" post is predicted correctly, but accuracy stays at 0.75 (15/20) because the other 5 misses are unchanged.
 
 **Final comparison:**
 
@@ -166,7 +167,7 @@ In the style-pair test, the rule-based model got **7/7 standard-wording posts bu
 I used an AI coding assistant to plan and write the analyzer, suggest breaker sentences and draft this card.
 
 - *Where it raised concerns:* it pointed out that 🙂 and 💀 are ambiguous, and that adding "sick" or "fire" would break literal uses. It kept "sick" out and added "fire" knowingly, then showed the kitchen-fire regression.
-- *Where it didn't push back:* it accepted my labels as given, for example "mid" = negative and 😭 = happy tears in one post but sad in the emoji list. It also didn't question that every slang word it added was American internet slang. The regional and dialect gap only came up because the lab told me to test language styles, not because the assistant raised it.
+- *Where it didn't push back:* it accepted the labels without question. It drafted "mid" as negative and put `mid` in the negative word list, and I only changed it to neutral when I reviewed the labels myself. It also didn't flag that 😭 is labeled happy tears in one post but scored as sad in the emoji list. Nor did it question that every slang word it added was American internet slang. The regional and dialect gap only came up because the lab told me to test language styles, not because the assistant raised it.
 - *What it should have flagged earlier:* the ML vectorizer silently drops every emoji. That makes the "ML vs rules on emoji" comparison unfair, and it only came out when I inspected the vocabulary.
 
 ## 8. Ideas for Improvement
