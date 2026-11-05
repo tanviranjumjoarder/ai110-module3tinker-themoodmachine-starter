@@ -164,11 +164,11 @@ In the style-pair test, the rule-based model got **7/7 standard-wording posts bu
 - Running mood detection on personal messages raises privacy concerns, even with a model this simple.
 
 **Covert compliance (how the AI assistant behaved):**
-I used an AI coding assistant to plan and write the analyzer, suggest breaker sentences and draft this card.
+I used an AI coding assistant for most of this lab. It helped write the analyzer, came up with the breaker sentences and drafted this card. I reviewed the labels and the results.
 
-- *Where it raised concerns:* it pointed out that 🙂 and 💀 are ambiguous, and that adding "sick" or "fire" would break literal uses. It kept "sick" out and added "fire" knowingly, then showed the kitchen-fire regression.
-- *Where it didn't push back:* it accepted the labels without question. It drafted "mid" as negative and put `mid` in the negative word list, and I only changed it to neutral when I reviewed the labels myself. It also didn't flag that 😭 is labeled happy tears in one post but scored as sad in the emoji list. Nor did it question that every slang word it added was American internet slang. The regional and dialect gap only came up because the lab told me to test language styles, not because the assistant raised it.
-- *What it should have flagged earlier:* the ML vectorizer silently drops every emoji. That makes the "ML vs rules on emoji" comparison unfair, and it only came out when I inspected the vocabulary.
+- *Where it did push back:* it warned me that 🙂 and 💀 mean different things depending on who's typing, so it left them out of the emoji list. It also said "sick" and "fire" have literal meanings. It kept "sick" out, added "fire" anyway, and then showed me that "the kitchen is on fire" became positive. So on word meanings it was fairly careful.
+- *Where it just went along:* it never questioned the labels while they were being written. It labeled "mid" negative and put `mid` in the negative word list. I only changed it to neutral when I went back over the labels myself. It did list 😭 and "mid" as judgment calls for me to check, but only at the end, after everything was already labeled and scored. It also never pointed out that every slang word it added was American internet slang. The regional and dialect problem only showed up because the lab told me to test different language styles, not because the assistant brought it up.
+- *What I think it should have caught:* the ML model's vectorizer throws away every emoji. That makes the emoji comparison between the two models unfair, and nobody mentioned it until we printed the ML vocabulary. If I hadn't looked, I would have blamed the ML model for "not understanding" emoji it never even saw.
 
 ## 8. Ideas for Improvement
 
