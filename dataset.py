@@ -104,6 +104,11 @@ SAMPLE_POSTS = [
     "Exam went terrible but at least the weekend is here",
     "can't stop smiling today :)",
     "That movie was mid tbh",
+    # --- Added in Part 4 to see how each model reacts to more data ---
+    "Missing home a lot lately",
+    "Meeting got moved to 3pm",
+    "I hate how much I love this show 😂",
+    "So tired of being tired",
 ]
 
 # Human labels for each post above.
@@ -129,6 +134,10 @@ TRUE_LABELS = [
     "mixed",     # "Exam went terrible but at least the weekend is here"
     "positive",  # "can't stop smiling today :)"
     "negative",  # "That movie was mid tbh"  (mild; some would say neutral)
+    "negative",  # "Missing home a lot lately"
+    "neutral",   # "Meeting got moved to 3pm"
+    "positive",  # "I hate how much I love this show 😂"  (affectionate; could be mixed)
+    "negative",  # "So tired of being tired"
 ]
 
 # Every post needs exactly one label. Fail loudly here instead of letting
