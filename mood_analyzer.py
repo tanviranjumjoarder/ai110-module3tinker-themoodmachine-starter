@@ -13,7 +13,7 @@ Pipeline:
 import re
 from typing import Dict, List, Optional
 
-from dataset import NEGATIVE_WORDS, POSITIVE_WORDS
+from dataset import EMOJI_SCORES, NEGATIVE_WORDS, POSITIVE_WORDS
 
 # Words that flip the meaning of the next sentiment word ("not happy").
 # Apostrophes are removed in preprocess, so "don't" arrives as "dont".
@@ -55,6 +55,7 @@ class MoodAnalyzer:
         # Store as sets for faster lookup.
         self.positive_words = set(w.lower() for w in positive_words)
         self.negative_words = set(w.lower() for w in negative_words)
+        self.emoji_scores = dict(EMOJI_SCORES)
 
     # ---------------------------------------------------------------------
     # Preprocessing
@@ -109,6 +110,9 @@ class MoodAnalyzer:
             "dont", ...) appeared within the previous NEGATION_WINDOW tokens,
             the next sentiment word counts the opposite way, so
             "not happy" = -1 and "not bad" = +1.
+          - FIX (Part 3, emoji signals): emoji/emoticons in EMOJI_SCORES add
+            their score. Negation does NOT flip them: in "fire no cap 🔥"
+            the "no" is slang, and an emoji is a separate signal anyway.
         """
         tokens = self.preprocess(text)
         positive_hits: List[str] = []
@@ -117,6 +121,12 @@ class MoodAnalyzer:
         tokens_since_negation: Optional[int] = None
 
         for token in tokens:
+            if token in self.emoji_scores:
+                value = self.emoji_scores[token]
+                score += value
+                (positive_hits if value > 0 else negative_hits).append(token)
+                continue
+
             if token in NEGATION_WORDS:
                 tokens_since_negation = 0
                 continue

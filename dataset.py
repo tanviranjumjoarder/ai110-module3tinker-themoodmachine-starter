@@ -31,6 +31,12 @@ POSITIVE_WORDS = [
     "glad",
     "enjoy",
     "wonderful",
+    # added in Part 3 (slang fix): common praise slang
+    "fire",
+    "slaps",
+    "bussin",
+    "goated",
+    "lit",
 ]
 
 NEGATIVE_WORDS = [
@@ -51,7 +57,29 @@ NEGATIVE_WORDS = [
     "annoyed",
     "exhausted",
     "lonely",
+    # added in Part 3 (slang fix): common put-down slang
+    "mid",
+    "trash",
 ]
+
+# Emoji and emoticon signals (added in Part 3).
+# Left out on purpose because their meaning depends on context:
+#   "🙂" (can be passive-aggressive) and "💀" (usually means "I'm dying laughing").
+EMOJI_SCORES = {
+    ":)": 1,
+    ":d": 1,
+    ";)": 1,
+    "😂": 1,
+    "😍": 1,
+    "🎉": 1,
+    "🔥": 1,
+    "❤": 1,
+    ":(": -1,
+    "😩": -1,
+    "😭": -1,
+    "😡": -1,
+    "😞": -1,
+}
 
 # ---------------------------------------------------------------------
 # Starter labeled dataset
