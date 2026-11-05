@@ -131,6 +131,12 @@ class MoodAnalyzer:
                 tokens_since_negation = 0
                 continue
 
+            # "can't stop smiling" means MORE smiling, not less: a negated
+            # "stop" cancels the negation instead of flipping the next word.
+            if token == "stop" and tokens_since_negation is not None:
+                tokens_since_negation = None
+                continue
+
             if token in self.positive_words:
                 value = 1
             elif token in self.negative_words:
