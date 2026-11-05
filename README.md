@@ -13,6 +13,7 @@ This lab gives you hands on experience with how basic systems work, where they b
 ├── mood_analyzer.py   # Rule based classifier with TODOs to improve
 ├── main.py            # Runs the rule based model and interactive demo
 ├── ml_experiments.py  # (New) A tiny ML classifier using scikit-learn
+├── stress_test.py     # Held-out breaker sentences + standard vs informal wording pairs
 ├── model_card.md      # Template to fill out after experimenting
 └── requirements.txt   # Dependencies for optional ML exploration
 ```
@@ -65,3 +66,26 @@ During this lab you will:
 - When debugging, print tokens, scores, or intermediate choices.
 - Ask an AI assistant to help create edge case posts or unusual wording.
 - Try examples that mislead or confuse your model. Failure cases teach you the most.
+
+---
+
+## My Results
+
+Run everything (after `pip install -r requirements.txt`):
+
+```bash
+python main.py              # rule-based evaluation with per-post explanations
+python ml_experiments.py    # ML model (training accuracy)
+python stress_test.py --ml  # both models on held-out breakers and style pairs
+```
+
+| | Rule-based | ML |
+|---|---|---|
+| 20 labeled posts | 0.75 | 1.00 (training data) |
+| 14 held-out breakers | 8/14 | 7/14 |
+| Standard vs informal wording | 7/7 vs 4/7 | 4/7 vs 4/7 |
+
+What I built: text cleanup (emoji tokens, stretched words, apostrophes), negation
+handling, emoji and slang signals, a `mixed` label, and explanations that show
+which words drove each score. See [`model_card.md`](model_card.md) for the full
+evaluation, the failures I fixed versus documented, and the bias analysis.
