@@ -50,6 +50,17 @@ SAMPLE_POSTS = [
     "This is fine",
     "So excited for the weekend",
     "I am not happy about this",
+    # --- Added posts: slang, emojis, sarcasm, mixed feelings, subtle tone ---
+    "Lowkey stressed but kind of proud of myself",
+    "Just got the internship offer!!! 😭🎉",
+    "I absolutely love getting stuck in traffic for an hour",
+    "ugh my laptop died right before the deadline 😩",
+    "the new album is fire no cap 🔥",
+    "Going to the grocery store after class",
+    "Not bad at all, honestly better than I expected",
+    "Exam went terrible but at least the weekend is here",
+    "can't stop smiling today :)",
+    "That movie was mid tbh",
 ]
 
 # Human labels for each post above.
@@ -65,30 +76,21 @@ TRUE_LABELS = [
     "neutral",   # "This is fine"
     "positive",  # "So excited for the weekend"
     "negative",  # "I am not happy about this"
+    "mixed",     # "Lowkey stressed but kind of proud of myself"
+    "positive",  # "Just got the internship offer!!! 😭🎉"  (😭 = happy tears here)
+    "negative",  # "I absolutely love getting stuck in traffic..."  (sarcasm)
+    "negative",  # "ugh my laptop died right before the deadline 😩"
+    "positive",  # "the new album is fire no cap 🔥"  (slang praise)
+    "neutral",   # "Going to the grocery store after class"
+    "positive",  # "Not bad at all, honestly better than I expected"
+    "mixed",     # "Exam went terrible but at least the weekend is here"
+    "positive",  # "can't stop smiling today :)"
+    "negative",  # "That movie was mid tbh"  (mild; some would say neutral)
 ]
 
-# TODO: Add 5-10 more posts and labels.
-#
-# Requirements:
-#   - For every new post you add to SAMPLE_POSTS, you must add one
-#     matching label to TRUE_LABELS.
-#   - SAMPLE_POSTS and TRUE_LABELS must always have the same length.
-#   - Include a variety of language styles, such as:
-#       * Slang ("lowkey", "highkey", "no cap")
-#       * Emojis (":)", ":(", "🥲", "😂", "💀")
-#       * Sarcasm ("I absolutely love getting stuck in traffic")
-#       * Ambiguous or mixed feelings
-#
-# Tips:
-#   - Try to create some examples that are hard to label even for you.
-#   - Make a note of any examples that you and a friend might disagree on.
-#     Those "edge cases" are interesting to inspect for both the rule based
-#     and ML models.
-#
-# Example of how you might extend the lists:
-#
-# SAMPLE_POSTS.append("Lowkey stressed but kind of proud of myself")
-# TRUE_LABELS.append("mixed")
-#
-# Remember to keep them aligned:
-#   len(SAMPLE_POSTS) == len(TRUE_LABELS)
+# Every post needs exactly one label. Fail loudly here instead of letting
+# zip() silently drop examples later in main.py / ml_experiments.py.
+assert len(SAMPLE_POSTS) == len(TRUE_LABELS), (
+    f"SAMPLE_POSTS has {len(SAMPLE_POSTS)} posts but TRUE_LABELS has "
+    f"{len(TRUE_LABELS)} labels"
+)
